@@ -5,10 +5,6 @@ import InputLine from './InputLine';
 
 const dbUrl = "http://localhost:3000/db";
 
-let dummyData = [{task: "Learn about React", completed: true},
-                 {task: "Finish todo project", completed: false},
-                 {task: "Horizons speaker series", completed: false}];
-
 class TodoApp extends React.Component {
   constructor(props) {
     super(props);
@@ -17,11 +13,15 @@ class TodoApp extends React.Component {
     }
   }
   componentDidMount() {
-    this.setState({todos: dummyData});
+    axios.get(dbUrl + '/all')
+    .then((response) => {
+      this.setState({todos: response.data})
+    })
+    .catch((error) => {
+      console.log(error);
+    })
   }
   addTodo(task) {
-    // dummyData = dummyData.concat({task: task, completed: false});
-    // this.setState({todos: dummyData});
     axios.post(dbUrl + '/add', {task: task})
     .then((response) => {
       this.setState({todos: this.state.todos.concat(response.data)});
@@ -31,12 +31,26 @@ class TodoApp extends React.Component {
     });
   }
   removeTodo(index) {
-    dummyData.splice(index, 1);
-    this.setState({todos: dummyData});
+    axios.post(dbUrl + '/remove', {id: this.state.todos[index]._id})
+    .then((response) => {
+      this.setState({todos: [...this.state.todos.slice(0, index),
+                             ...this.state.todos.slice(index+1)]});
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
   toggleTodo(index) {
-    dummyData[index].completed = !dummyData[index].completed;
-    this.setState({todos: dummyData});
+    axios.post(dbUrl + '/toggle', {id: this.state.todos[index]._id,
+                                  to: !this.state.todos[index].completed})
+    .then((response) => {
+      let newTodos = [...this.state.todos];
+      newTodos[index] = response.data;
+      this.setState({todos: newTodos});
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
   render() {
     return (

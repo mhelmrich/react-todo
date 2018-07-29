@@ -1571,6 +1571,8 @@ var _InputLine2 = _interopRequireDefault(_InputLine);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -1578,8 +1580,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var dbUrl = "http://localhost:3000/db";
-
-var dummyData = [{ task: "Learn about React", completed: true }, { task: "Finish todo project", completed: false }, { task: "Horizons speaker series", completed: false }];
 
 var TodoApp = function (_React$Component) {
   _inherits(TodoApp, _React$Component);
@@ -1598,17 +1598,21 @@ var TodoApp = function (_React$Component) {
   _createClass(TodoApp, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.setState({ todos: dummyData });
+      var _this2 = this;
+
+      _axios2.default.get(dbUrl + '/all').then(function (response) {
+        _this2.setState({ todos: response.data });
+      }).catch(function (error) {
+        console.log(error);
+      });
     }
   }, {
     key: 'addTodo',
     value: function addTodo(task) {
-      var _this2 = this;
+      var _this3 = this;
 
-      // dummyData = dummyData.concat({task: task, completed: false});
-      // this.setState({todos: dummyData});
       _axios2.default.post(dbUrl + '/add', { task: task }).then(function (response) {
-        _this2.setState({ todos: _this2.state.todos.concat(response.data) });
+        _this3.setState({ todos: _this3.state.todos.concat(response.data) });
       }).catch(function (error) {
         console.log(error);
       });
@@ -1616,32 +1620,45 @@ var TodoApp = function (_React$Component) {
   }, {
     key: 'removeTodo',
     value: function removeTodo(index) {
-      dummyData.splice(index, 1);
-      this.setState({ todos: dummyData });
+      var _this4 = this;
+
+      _axios2.default.post(dbUrl + '/remove', { id: this.state.todos[index]._id }).then(function (response) {
+        _this4.setState({ todos: [].concat(_toConsumableArray(_this4.state.todos.slice(0, index)), _toConsumableArray(_this4.state.todos.slice(index + 1))) });
+      }).catch(function (error) {
+        console.log(error);
+      });
     }
   }, {
     key: 'toggleTodo',
     value: function toggleTodo(index) {
-      dummyData[index].completed = !dummyData[index].completed;
-      this.setState({ todos: dummyData });
+      var _this5 = this;
+
+      _axios2.default.post(dbUrl + '/toggle', { id: this.state.todos[index]._id,
+        to: !this.state.todos[index].completed }).then(function (response) {
+        var newTodos = [].concat(_toConsumableArray(_this5.state.todos));
+        newTodos[index] = response.data;
+        _this5.setState({ todos: newTodos });
+      }).catch(function (error) {
+        console.log(error);
+      });
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this6 = this;
 
       return _react2.default.createElement(
         'div',
         { id: 'todo-box' },
         _react2.default.createElement(_InputLine2.default, { submit: function submit(task) {
-            return _this3.addTodo(task);
+            return _this6.addTodo(task);
           } }),
         _react2.default.createElement(_TodoList2.default, { todos: this.state.todos,
           todoXClick: function todoXClick(index) {
-            return _this3.removeTodo(index);
+            return _this6.removeTodo(index);
           },
           todoToggle: function todoToggle(index) {
-            return _this3.toggleTodo(index);
+            return _this6.toggleTodo(index);
           } })
       );
     }
@@ -2775,8 +2792,8 @@ var TodoList = function (_React$Component) {
       return _react2.default.createElement(
         'ul',
         null,
-        this.props.todos.map(function (item, index) {
-          return _react2.default.createElement(_Todo2.default, { key: index, task: item.task, completed: item.completed,
+        this.props.todos.map(function (todo, index) {
+          return _react2.default.createElement(_Todo2.default, { key: todo._id, task: todo.task, completed: todo.completed,
             xClick: function xClick() {
               return _this2.props.todoXClick(index);
             },
