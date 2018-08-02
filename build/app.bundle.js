@@ -1767,7 +1767,14 @@ var TodoApp = function (_React$Component) {
           },
           todoToggle: function todoToggle(index) {
             return _this6.toggleTodo(index);
-          } })
+          } }),
+        _react2.default.createElement(
+          'button',
+          { id: 'logout', onClick: function onClick() {
+              return _this6.props.logout();
+            } },
+          'Log out'
+        )
       );
     }
   }]);

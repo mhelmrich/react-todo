@@ -59,6 +59,7 @@ class TodoApp extends React.Component {
         <TodoList todos={this.state.todos}
           todoXClick={(index) => (this.removeTodo(index))}
           todoToggle={(index) => (this.toggleTodo(index))}/>
+        <button id="logout" onClick={() => this.props.logout()}>Log out</button>
       </div>
     )
   }
