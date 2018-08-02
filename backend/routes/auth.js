@@ -4,10 +4,21 @@ const User = require('../models/User.js');
 
 module.exports = function(passport) {
 
-  router.post('/login', passport.authenticate('local', (err) => {
-    if (err) res.json({success: false})
-    else res.json({success: true});
-  }));
+  router.get('/username', (req, res) => {
+    if (req.user) res.json({loggedIn: true, username: req.user.username});
+    else res.json({loggedIn: false});
+  })
+
+  router.post('/login', (req, res, next) => {
+    passport.authenticate('local', (err, user) => {
+      if (err) return res.status(500).json({success: false});
+      if (!user) return res.status(400).json({success: false});
+      req.logIn(user, (err) => {
+        if (err) return res.status(500).json({success: false});
+        return res.json({success: true});
+      });
+    })(req, res, next);
+  });
 
   router.post('/signup', (req, res) => {
     if (req.body.username && req.body.password) {

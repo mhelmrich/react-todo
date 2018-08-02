@@ -36,7 +36,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-//app.use('/', auth(passport));
+app.use('/', auth(passport));
 app.use('/db', dbRoutes);
 
 app.listen(3000, () => {

@@ -3,7 +3,7 @@ const router = express.Router();
 const TodoItem = require('../models/TodoItem.js');
 
 router.get('/all', (req, res) => {
-  TodoItem.find()
+  TodoItem.find({owner: req.user._id})
   .then((todos) => {
     res.send(todos);
   })
@@ -14,7 +14,8 @@ router.get('/all', (req, res) => {
 
 router.post('/add', (req, res) => {
   (new TodoItem({
-    task: req.body.task
+    task: req.body.task,
+    owner: req.user._id
   }))
   .save()
   .then((todo) => {

@@ -9,12 +9,11 @@ const todoItemSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  /*
   owner: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
     required: true
-  }*/
+  }
 });
 
 const TodoItem = mongoose.model('Todo', todoItemSchema);
