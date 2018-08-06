@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import LoginForm from './LoginForm';
+import RegistrationForm from './RegistrationForm';
 
 class Login extends React.Component {
   constructor(props) {
@@ -21,8 +22,8 @@ class Login extends React.Component {
       console.log(err);
     });
   }
-  register(username, password) {
-    axios.post('/register', {username, password})
+  register(email, username, password) {
+    axios.post('/register', {email, username, password})
     .then((resp) => {
       if (resp.data.success) this.setState({login: true});
     })
@@ -33,7 +34,8 @@ class Login extends React.Component {
   render() {
     if (this.state.login) return <LoginForm toRegistration={() => this.switchForms()}
       login={(username, password) => this.login(username, password)}/>
-    return <p>Registration goes here</p>
+    return <RegistrationForm toLogin={() => this.switchForms()}
+      register={(email, username, password) => this.register(email, username, password)}/>
   }
 }
 

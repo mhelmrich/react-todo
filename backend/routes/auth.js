@@ -29,8 +29,9 @@ module.exports = function(passport) {
   });
 
   router.post('/register', (req, res) => {
-    if (req.body.username && req.body.password) {
+    if (req.body.email && req.body.username && req.body.password) {
       (new User({
+        email: req.body.email,
         username: req.body.username,
         password: hashPassword(req.body.password)
       }))
