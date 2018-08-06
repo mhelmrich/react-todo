@@ -28,7 +28,7 @@ module.exports = function(passport) {
     })(req, res, next);
   });
 
-  router.post('/signup', (req, res) => {
+  router.post('/register', (req, res) => {
     if (req.body.username && req.body.password) {
       (new User({
         username: req.body.username,

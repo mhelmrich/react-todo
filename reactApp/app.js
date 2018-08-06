@@ -32,7 +32,7 @@ class App extends React.Component {
   render() {
     if (this.state.loggedIn) return <TodoApp username={this.state.username}
                                             logout={() => this.logout()}/>;
-    else return <Login login={(username) => this.login(username)}/>
+    return <Login login={(username) => this.login(username)}/>
   }
 }
 

@@ -1,44 +1,39 @@
 import React from 'react';
 import axios from 'axios';
+import LoginForm from './LoginForm';
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: ''
+      login: true
     }
   }
-  handleUsernameChange(event) {
-    this.setState({username: event.target.value});
+  switchForms() {
+    this.setState({login: !this.state.login});
   }
-  handlePasswordChange(event) {
-    this.setState({password: event.target.value});
-  }
-  submit() {
-    axios.post('/login', {username: this.state.username,
-                          password: this.state.password})
+  login(username, password) {
+    axios.post('/login', {username, password})
     .then((resp) => {
-      if (resp.data.success) {
-        let username = this.state.username;
-        this.setState({username: '', password: ''});
-        this.props.login(username);
-      }
+      if (resp.data.success) this.props.login(username);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+  register(username, password) {
+    axios.post('/register', {username, password})
+    .then((resp) => {
+      if (resp.data.success) this.setState({login: true});
     })
     .catch((err) => {
       console.log(err);
     });
   }
   render() {
-    return (
-      <div id="loginForm">
-        <input id="username" type="text" placeholder="Username"
-          onChange={(event) => this.handleUsernameChange(event)}/>
-        <input id="password" type="password" placeholder="Password"
-          onChange={(event) => this.handlePasswordChange(event)}/>
-        <button onClick={() => this.submit()}>Log in</button>
-      </div>
-    )
+    if (this.state.login) return <LoginForm toRegistration={() => this.switchForms()}
+      login={(username, password) => this.login(username, password)}/>
+    return <p>Registration goes here</p>
   }
 }
 
